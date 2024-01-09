@@ -17,6 +17,7 @@ WITH THIS SOFTWARE.
 Description:  Functions for configuration of MFDS lists on the Micro Focus server.
 """
 
+import os
 import requests
 from utilities.misc import create_headers, check_http_error
 from utilities.session import get_session, save_cookies
@@ -46,11 +47,11 @@ def check_mfds_list(ip_address):
 def add_mfds_to_list(ip_address, mfds_description):
     """ Add an MFDS to a Micro Focus server. """
 
-    uri = 'http://{}:10086/server/v1/config/mfds'.format(ip_address)
+    uri = 'http://{}:10086/server/v1/config/mfds/'.format(ip_address)
     req_headers = create_headers('CreateRegion', ip_address)
     req_body = {
         'MfdsHost': ip_address,
-        'MfdsPort': "86",
+        'MfdsPort': os.getenv("CCITCP2_PORT","86"),
         'MfdsIdentifier': 'Test',
         'MfdsDescription': mfds_description
     }

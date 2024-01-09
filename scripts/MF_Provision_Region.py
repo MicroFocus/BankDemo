@@ -233,7 +233,11 @@ def create_region(main_configfile):
     template_base = os.path.join(parentdir, 'system')
     sys_base = os.path.join(parentdir, region_name, 'system')
 
-    create_new_system(template_base,sys_base)
+    try:
+        create_new_system(template_base,sys_base)
+    except FileExistsError as exc:
+        write_log('Unable to create new system.')
+        write_log(exc)
     
     #create an empty resource definition file
     caspcrd = os.path.join(install_dir, 'caspcrd')
@@ -563,6 +567,7 @@ def create_region(main_configfile):
         if ant_home is None:
             write_log('ANT_HOME not set. Precompiled executables therefore being deployed')
             deploy_application(parentdir, sys_base, os_type, is64bit, loadlibDir)
+            write_log('Precompiled system executables being deployed'.format(mf_product))
         else:
             write_log('Application being built')
 
@@ -578,8 +583,9 @@ def create_region(main_configfile):
                 set64bit = 'false'
 
             run_ant_file(build_file,source_dir,load_dir,ant_home, full_build, dataversion, set64bit)
+            write_log(' (see built.txt for results)')
+            write_log('Compiled system executables being deployed'.format(mf_product))
 
-        write_log('Precompiled system executables being deployed'.format(mf_product))
         deploy_system_modules(parentdir, sys_base, os_type, is64bit, loadlibDir)
 
     ## Following the update of the SIT and other attributes, the region must be restarted
